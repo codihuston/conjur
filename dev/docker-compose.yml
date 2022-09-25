@@ -49,6 +49,11 @@ services:
       # See https://github.com/DatabaseCleaner/database_cleaner#safeguards
       DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL: "true"
       BUNDLE_GEMFILE: /src/conjur-server/Gemfile
+      # TODO: define in secrets in a global policy
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_VHOST: my_vhost
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
     cap_add:
       - SYSLOG
     ports:
@@ -182,6 +187,33 @@ services:
         python /usr/src/jwks/jwks_server.py -p 8090
     volumes:
       - ../ci/jwt/:/usr/src/jwks/
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: docker.io/library/rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_VHOST: my_vhost
+    ports:
+        # AMQP protocol port
+        - '5672:5672'
+        # HTTP management UI
+        - '8000:15672'
+
+  bot_app:
+    build:
+      context: rabbitmq-receiver
+    container_name: bot_app
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_VHOST: my_vhost
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password
+    command: tail -F anything
+    volumes:
+    - ./rabbitmq-receiver:/app
+    restart: on-failure
 
 volumes:
   authn-local:

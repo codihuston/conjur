@@ -36,6 +36,7 @@ ENABLE_OIDC_ADFS=false
 ENABLE_OIDC_OKTA=false
 ENABLE_ROTATORS=false
 ENABLE_AUDIT=false
+ENABLE_RABBITMQ=false
 
 main() {
   unset COMPOSE_PROJECT_NAME
@@ -67,6 +68,7 @@ main() {
   init_gcp
   init_jwt
   init_oidc
+  init_rabbitmq
   init_rotators
 
   # Updates CONJUR_AUTHENTICATORS and restarts required services.
@@ -122,6 +124,7 @@ parse_options() {
       --authn-oidc ) ENABLE_AUTHN_OIDC=true ; shift ;;
       --oidc-adfs ) ENABLE_OIDC_ADFS=true ; shift ;;
       --oidc-okta ) ENABLE_OIDC_OKTA=true ; shift ;;
+      --rabbitmq ) ENABLE_RABBITMQ=true ; shift ;;
       --rotators ) ENABLE_ROTATORS=true ; shift ;;
       --audit ) ENABLE_AUDIT=true ; shift ;;
       -h | --help ) print_help ; shift ;;
@@ -396,6 +399,15 @@ init_oidc() {
     docker exec "$(docker-compose ps -q okta-ldap-agent)" \
       "/opt/Okta/OktaLDAPAgent/scripts/OktaLDAPAgent"
   fi
+}
+
+init_rabbitmq() {
+  if [[ $ENABLE_RABBITMQ != true ]]; then
+    return
+  fi
+
+  services+=(rabbitmq)
+  env_args+=(-e "CONJUR_ENABLE_RABBITMQ=true")
 }
 
 init_rotators() {

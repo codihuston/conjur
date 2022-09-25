@@ -125,3 +125,5 @@ end
 group :test do
   gem 'haikunator', '~> 1' # for generating random names in tests
 end
+
+gem "bunny", ">= 2.13.0"
