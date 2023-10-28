@@ -20,6 +20,7 @@ module AuthorizeResource
   private
 
   def auth(user, privilege, resource)
+    # TODO: replace with casbin call
     unless user.allowed_to?(privilege, resource)
       logger.info(
         Errors::Authentication::Security::RoleNotAuthorizedOnResource.new(

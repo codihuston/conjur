@@ -1,3 +1,9 @@
+# TODO
+
+- Replace authorization check (is_role_allowed_to) with casbin instead 
+  (fetch secret)
+- Instrument performance
+
 # Casbin
 
 ```
@@ -168,3 +174,4 @@ go run main.go
 # References
 
 - https://casbin.org/docs/understanding-casbin-detail/
+- https://github.com/CasbinRuby/casbin-ruby
