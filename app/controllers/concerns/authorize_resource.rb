@@ -31,7 +31,19 @@ module AuthorizeResource
     # TODO: replace with casbin call
     # unless user.allowed_to?(privilege, resource)
 
-    if enforcer.enforce(user.role_id, resource.resource_id, privilege)
+    # This call results in the following error...
+    # This is because privilege "update" does not appear in the policy definition!
+    # INFO 2023/10/28 11:32:05 +0000 [pid=663] [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667] Completed 500 Internal Server Error in 4521ms (Allocations: 16921281)
+    # FATAL 2023/10/28 11:32:05 +0000 [pid=663] [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667]
+    # [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667] NoMethodError (undefined method `to_node' for :update:Symbol):
+    # [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667]
+    # [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667] app/controllers/concerns/authorize_resource.rb:34:in `auth'
+    # [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667] app/controllers/concerns/authorize_resource.rb:13:in `authorize'
+    # [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667] app/controllers/secrets_controller.rb:12:in `create'
+    # [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667] app/controllers/application_controller.rb:83:in `run_with_transaction'
+    # [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667] lib/rack/remove_request_parameters.rb:26:in `call'
+    # [origin=172.18.0.2] [request_id=f6504b8e-1ecb-4fa8-a3b1-9d9dc41046e5] [tid=667] lib/rack/default_content_type.rb:78:in `call'
+    if enforcer.enforce(user.role_id, resource.resource_id, "read")
       # permit alice to read data1
       # do something
     else
