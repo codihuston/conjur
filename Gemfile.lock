@@ -107,6 +107,8 @@ GEM
     bindata (2.4.15)
     builder (3.2.4)
     byebug (11.1.3)
+    casbin-ruby (1.1.1)
+      keisan (~> 0.8.0)
     childprocess (4.1.0)
     ci_reporter (2.1.0)
       builder (>= 2.1.2)
@@ -114,6 +116,7 @@ GEM
     ci_reporter_rspec (1.0.0)
       ci_reporter (~> 2.0)
       rspec (>= 2.14, < 4)
+    cmath (1.0.0)
     coderay (1.1.3)
     command_class (0.0.2)
     concurrent-ruby (1.2.2)
@@ -264,6 +267,8 @@ GEM
     jsonpath (1.1.3)
       multi_json
     jwt (2.7.1)
+    keisan (0.8.13)
+      cmath (~> 1.0)
     kubeclient (4.11.0)
       http (>= 3.0, < 6.0)
       jsonpath (~> 1.0)
@@ -527,6 +532,7 @@ DEPENDENCIES
   base32-crockford
   base58
   bcrypt
+  casbin-ruby
   ci_reporter_rspec
   command_class
   conjur-api (~> 5.pre)

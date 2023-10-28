@@ -1,5 +1,6 @@
 # TODO
 
+- Install `gem install casbin-ruby` and start the server `conjurctl server`
 - Replace authorization check (is_role_allowed_to) with casbin instead 
   (fetch secret)
 - Instrument performance
@@ -169,6 +170,43 @@ Modify the sub, obj, act fields in `main.go` and run the file:
 
 ```
 go run main.go
+```
+
+## In Ruby
+
+Changes already made in source.
+
+### Test Host
+
+```bash
+docker exec -it bash dev-client-1
+
+HOST="vault-synchronizer-hosts/lob-1/safe-1/host-1"
+conjur host rotate_api_key --host $HOST
+
+AUTHN="host%2Fvault-synchronizer-hosts%2Flob-1%2Fsafe-1%2Fhost-1"
+SECRET_ID="vault-synchronizer%2Flob-1%2Fsafe-1%2Fvariable-1"
+CONJUR_APPLIANCE_URL="http://conjur:3000"
+CONJUR_ACCOUNT="cucumber"
+API_KEY="24c1q5d227bhzcsxpm51zmkq0wbj3xy21fge9yb3pw794j1mkr0qz"
+TOKEN=$(curl \
+  --verbose \
+  --insecure \
+  --header "Accept-Encoding: base64" \
+  --data "$API_KEY" \
+  "$CONJUR_APPLIANCE_URL/authn/$CONJUR_ACCOUNT/$AUTHN/authenticate"
+)
+echo $TOKEN
+
+# Set it
+ docker exec dev-client-1 conjur variable values add vault-synchronizer/lob-1/safe-1/variable-1 qwe
+curl -H "Authorization: Token token=\"$TOKEN\"" \
+     --data "data1" \
+    $CONJUR_APPLIANCE_URL/secrets/$CONJUR_ACCOUNT/variable/$SECRET_ID
+
+# Get it
+curl -H "Authorization: Token token=\"$TOKEN\"" \
+    $CONJUR_APPLIANCE_URL/secrets/$CONJUR_ACCOUNT/variable/$SECRET_ID
 ```
 
 # References
